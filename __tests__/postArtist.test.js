@@ -11,7 +11,7 @@ require('dotenv').config({
 
 describe('Artist POST Endpoint', () => {
   beforeAll((done) => {
-    mongoose.connect(process.env.TEST_DATABASE_CONN, {useNewUrlParser: true }, done)
+    mongoose.connect(process.env.TEST_DATABASE_CONN, { useNewUrlParser: true }, done);
   });
   it('should create a new Artist', (done) => {
     expect.assertions(2);
@@ -28,7 +28,7 @@ describe('Artist POST Endpoint', () => {
     });
     postArtist(request, response);
     response.on('end', () => {
-    let artistCreated = JSON.parse(response._getData());
+      const artistCreated = JSON.parse(response._getData());
       expect(artistCreated.name).toBe('Gold Panda');
       expect(artistCreated.genre).toBe('Ambient');
       done();
@@ -44,7 +44,7 @@ describe('Artist POST Endpoint', () => {
   });
   afterAll((done) => {
     mongoose.disconnect().then(() => {
-      setTimeout(done, 500)
+      setTimeout(done, 500);
     });
   });
 });
