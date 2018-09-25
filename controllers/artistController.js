@@ -1,7 +1,7 @@
 const Artist = require('../models/artistModel');
 
 exports.postArtist = (req, res) => {
-  const artist = new Artist({ name: req.body.name, genre: req.body.genre });
+  const artist = new Artist({ name: req.body.name, genre: req.body.genre, album: req.body.album, });
   artist.save((err, artistCreated) => {
     res.json(artistCreated);
   });
@@ -32,13 +32,22 @@ exports.putArtist = (req, res) => {
     }
     artist.set({ name: req.body.name });
     artist.set({ genre: req.body.genre });
+    // artist.set({ albums: req.body.albums });
 
     artist.save((updateErr, artistUpdated) => {
       if (updateErr) {
         res.json('Could not update');
       }
-
       res.json(artistUpdated);
     });
+  });
+};
+
+exports.deleteArtist = (req, res) => {
+  Artist.findByIdAndDelete(req.params.artistId, (err, artist) => {
+    if (err) {
+      res.json('Something went wrong');
+    }
+    res.send(artist === null);
   });
 };

@@ -2,64 +2,41 @@ const mongoose = require('mongoose');
 const path = require('path');
 const httpMocks = require('node-mocks-http');
 const events = require('events');
-const { putArtist } = require('../controllers/artistController');
+const { deleteArtist } = require('../controllers/artistController');
 const Artist = require('../models/artistModel');
 
 require('dotenv').config({
   path: path.join(__dirname, '../settings.env'),
 });
 
-describe('Artist PUT endpoint', () => {
+describe('Artist DELETE endpoint', () => {
   beforeAll((done) => {
     mongoose.connect(process.env.TEST_DATABASE_CONN, { useNewUrlParser: true }, done);
   });
 
-  it('should update an artist document when PUT is called', (done) => {
+  it('should delete an artist document when DELETE is called', (done) => {
     expect.assertions(1);
-    const artist = new Artist({
-      name: 'Norah Jones',
-      genre: 'Jazz',
-      albums: [{
-        name: 'Lonestar',
-        year: 1992,
-      }],
-    });
+    const artist = new Artist({ name: 'Bob Marley', genre: 'Jazz' });
     artist.save((err, artistCreated) => {
       if (err) {
         console.log(err, 'stuff went wrong');
       }
       const request = httpMocks.createRequest({
-        method: 'PUT',
-        URL: '/artist/1234',
+        method: 'DELETE',
+        URL: 'artist/1234',
         params: {
           artistId: artistCreated._id,
-        },
-        body: {
-          name: 'Norah Jones',
-          genre: 'Pop Folk',
-          albums: [{
-            name: 'Lonestar',
-            year: 1992,
-          }],
         },
       });
       const response = httpMocks.createResponse({
         eventEmitter: events.EventEmitter,
       });
-      putArtist(request, response);
+      deleteArtist(request, response);
       response.on('end', () => {
-        const updatedArtist = JSON.parse(response._getData());
-        expect(updatedArtist).toEqual({
-          __v: 0,
-          _id: artistCreated._id.toString(),
-          name: 'Norah Jones',
-          genre: 'Pop Folk',
-          albums: [{
-            name: 'Lonestar',
-            year: 1992,
-          }],
+        Artist.findById(artistCreated._id, (error, noSuchArtist) => {
+          expect(noSuchArtist).toBe(null);
+          done();
         });
-        done();
       });
     });
   });
@@ -72,7 +49,6 @@ describe('Artist PUT endpoint', () => {
       done();
     });
   });
-
   afterAll((done) => {
     mongoose.disconnect().then(() => {
       setTimeout(done, 500);
