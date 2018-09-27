@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const path = require('path');
 const bodyParser = require('body-parser');
 const {
-  postArtist, listArtists, getArtist, putArtist, deleteArtist,
+  postArtist, listArtists, getArtist, putArtist, deleteArtist, postAlbum,
 } = require('./controllers/artistController.js');
 
 require('dotenv').config({
@@ -20,5 +20,7 @@ app.get('/artist/all', listArtists);
 app.get('/artist/:artistId', getArtist);
 app.put('/artist/:artistId', putArtist);
 app.delete('/artist/:artistId', deleteArtist);
+app.post('/artist:artistId/albums', postAlbum);
+
 
 app.listen(3000, () => console.log('It works!'));
